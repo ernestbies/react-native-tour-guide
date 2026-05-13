@@ -1,7 +1,7 @@
 {
   "name": "react-native-tour-guide",
   "version": "1.0.0",
-  "description": "Interactive step-by-step tour guide for React Native apps, based on rn-tourguide",
+  "description": "Interactive step-by-step tour guide for React Native apps, based on rn-tourguide.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "private": false,
