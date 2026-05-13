@@ -12,6 +12,7 @@
     "build": "rm -rf lib/ && node_modules/.bin/tsc",
     "lint": "tslint --project .",
     "verify": "yarn test && yarn lint && yarn tsc && yarn build",
+    "prepare": "yarn build",
     "prepublishOnly": "yarn verify",
     "cleaning": "rm -rf node_modules && rm -f yarn.lock && yarn cache clean && yarn install && watchman watch-del-all && rm -fr $TMPDIR/react-*"
   },
