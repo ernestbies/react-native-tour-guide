@@ -1,18 +1,18 @@
-import * as React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import * as React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 
-import { Button } from './Button'
-import styles from './style'
-import { IStep, Labels } from '../types'
+import { Button } from './Button';
+import styles from './style';
+import { IStep, Labels } from '../types';
 
 export interface TooltipProps {
-  isFirstStep?: boolean
-  isLastStep?: boolean
-  currentStep: IStep
-  labels?: Labels
-  handleNext?: () => void
-  handlePrev?: () => void
-  handleStop?: () => void
+  isFirstStep?: boolean;
+  isLastStep?: boolean;
+  currentStep: IStep;
+  labels?: Labels;
+  handleNext?: () => void;
+  handlePrev?: () => void;
+  handleStop?: () => void;
 }
 
 export const Tooltip = ({
@@ -36,7 +36,7 @@ export const Tooltip = ({
     }}
   >
     <View style={styles.tooltipContainer}>
-      <Text testID='stepDescription' style={styles.tooltipText}>
+      <Text testID="stepDescription" style={styles.tooltipText}>
         {currentStep && currentStep.text}
       </Text>
     </View>
@@ -62,4 +62,4 @@ export const Tooltip = ({
       )}
     </View>
   </View>
-)
+);

@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { View, StyleProp, ViewStyle } from 'react-native'
+import * as React from 'react';
+import { View, StyleProp, ViewStyle } from 'react-native';
 
 interface WrapperProps {
-  copilot?: any
-  children?: React.ReactNode
-  style?: StyleProp<ViewStyle>
+  copilot?: any;
+  children?: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const Wrapper = React.forwardRef<View, WrapperProps>(
@@ -12,26 +12,26 @@ export const Wrapper = React.forwardRef<View, WrapperProps>(
     const setRef = React.useCallback(
       (node: View | null) => {
         if (typeof forwardedRef === 'function') {
-          forwardedRef(node)
+          forwardedRef(node);
         } else if (forwardedRef) {
-          forwardedRef.current = node
+          forwardedRef.current = node;
         }
 
         if (copilot?.ref) {
           if (typeof copilot.ref === 'function') {
-            copilot.ref(node)
+            copilot.ref(node);
           } else {
-            copilot.ref.current = node
+            copilot.ref.current = node;
           }
         }
       },
-      [forwardedRef, copilot],
-    )
+      [forwardedRef, copilot]
+    );
 
     return (
       <View style={style} ref={setRef} onLayout={copilot?.onLayout}>
         {children}
       </View>
-    )
-  },
-)
+    );
+  }
+);

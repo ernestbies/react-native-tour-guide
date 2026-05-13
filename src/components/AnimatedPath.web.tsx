@@ -1,3 +1,3 @@
-import { Path } from 'react-native-svg'
+import { Path } from 'react-native-svg';
 
-export const AnimatedSvgPath = Path
+export const AnimatedSvgPath = Path;

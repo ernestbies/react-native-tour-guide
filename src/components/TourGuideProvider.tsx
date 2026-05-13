@@ -1,36 +1,36 @@
-import mitt, { Emitter as MittEmitter } from 'mitt'
-import * as React from 'react'
-import { ScrollView, StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
-import { TourGuideContext, Ctx, TourGuideEvents } from './TourGuideContext'
-import { useIsMounted } from '../hooks/useIsMounted'
-import { IStep, Labels, StepObject, Steps } from '../types'
-import * as utils from '../utilities'
-import { Modal } from './Modal'
-import { OFFSET_WIDTH } from './style'
-import { TooltipProps } from './Tooltip'
+import mitt, { Emitter as MittEmitter } from 'mitt';
+import * as React from 'react';
+import { ScrollView, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { TourGuideContext, Ctx, TourGuideEvents } from './TourGuideContext';
+import { useIsMounted } from '../hooks/useIsMounted';
+import { IStep, Labels, StepObject, Steps } from '../types';
+import * as utils from '../utilities';
+import { Modal } from './Modal';
+import { OFFSET_WIDTH } from './style';
+import { TooltipProps } from './Tooltip';
 
-const { useMemo, useEffect, useState, useRef } = React
+const { useMemo, useEffect, useState, useRef } = React;
 /*
 This is the maximum wait time for the steps to be registered before starting the tutorial
 At 60fps means 2 seconds
 */
-const MAX_START_TRIES = 120
+const MAX_START_TRIES = 120;
 
 export interface TourGuideProviderProps {
-  tooltipComponent?: React.ComponentType<TooltipProps>
-  tooltipStyle?: StyleProp<ViewStyle>
-  labels?: Labels
-  androidStatusBarVisible?: boolean
-  startAtMount?: string | boolean
-  backdropColor?: string
-  verticalOffset?: number
-  wrapperStyle?: StyleProp<ViewStyle>
-  maskOffset?: number
-  borderRadius?: number
-  animationDuration?: number
-  children?: React.ReactNode
-  dismissOnPress?: boolean
-  preventOutsideInteraction?: boolean
+  tooltipComponent?: React.ComponentType<TooltipProps>;
+  tooltipStyle?: StyleProp<ViewStyle>;
+  labels?: Labels;
+  androidStatusBarVisible?: boolean;
+  startAtMount?: string | boolean;
+  backdropColor?: string;
+  verticalOffset?: number;
+  wrapperStyle?: StyleProp<ViewStyle>;
+  maskOffset?: number;
+  borderRadius?: number;
+  animationDuration?: number;
+  children?: React.ReactNode;
+  dismissOnPress?: boolean;
+  preventOutsideInteraction?: boolean;
 }
 
 export const TourGuideProvider = ({
@@ -49,46 +49,44 @@ export const TourGuideProvider = ({
   dismissOnPress = false,
   preventOutsideInteraction = false,
 }: TourGuideProviderProps) => {
-  const [scrollRef, setScrollRef] = useState<React.RefObject<ScrollView> | null>(
-    null,
-  )
-  const [tourKey, setTourKey] = useState<string | '_default'>('_default')
+  const [scrollRef, setScrollRef] = useState<React.RefObject<ScrollView> | null>(null);
+  const [tourKey, setTourKey] = useState<string | '_default'>('_default');
   const [visible, updateVisible] = useState<Ctx<boolean | undefined>>({
     _default: false,
-  })
+  });
   const setVisible = (key: string, value: boolean) =>
     updateVisible((visible) => {
-      const newVisible = { ...visible }
-      newVisible[key] = value
-      return newVisible
-    })
+      const newVisible = { ...visible };
+      newVisible[key] = value;
+      return newVisible;
+    });
   const [currentStep, updateCurrentStep] = useState<Ctx<IStep | undefined>>({
     _default: undefined,
-  })
-  const [steps, setSteps] = useState<Ctx<Steps>>({ _default: [] })
+  });
+  const [steps, setSteps] = useState<Ctx<Steps>>({ _default: [] });
 
-  const [canStart, setCanStart] = useState<Ctx<boolean>>({ _default: false })
+  const [canStart, setCanStart] = useState<Ctx<boolean>>({ _default: false });
 
-  const startTries = useRef<number>(0)
-  const { current: mounted } = useIsMounted()
+  const startTries = useRef<number>(0);
+  const { current: mounted } = useIsMounted();
 
   const { current: eventEmitter } = useRef<Ctx<MittEmitter<TourGuideEvents>>>({
     _default: mitt<TourGuideEvents>(),
-  })
+  });
 
-  const modal = useRef<any>(null)
+  const modal = useRef<any>(null);
 
   useEffect(() => {
     if (mounted && visible[tourKey] === false) {
-      eventEmitter[tourKey]?.emit('stop')
+      eventEmitter[tourKey]?.emit('stop');
     }
-  }, [visible])
+  }, [visible]);
 
   useEffect(() => {
     if (visible[tourKey] || currentStep[tourKey]) {
-      moveToCurrentStep(tourKey)
+      moveToCurrentStep(tourKey);
     }
-  }, [visible, currentStep])
+  }, [visible, currentStep]);
 
   useEffect(() => {
     if (mounted) {
@@ -98,28 +96,28 @@ export const TourGuideProvider = ({
           Object.entries(steps[tourKey]).length > 0
         ) {
           setCanStart((obj) => {
-            const newObj = { ...obj }
-            newObj[tourKey] = true
-            return newObj
-          })
+            const newObj = { ...obj };
+            newObj[tourKey] = true;
+            return newObj;
+          });
           if (typeof startAtMount === 'string') {
-            start(startAtMount)
+            start(startAtMount);
           } else if (startAtMount) {
-            start('_default')
+            start('_default');
           }
         } else {
           setCanStart((obj) => {
-            const newObj = { ...obj }
-            newObj[tourKey] = false
-            return newObj
-          })
+            const newObj = { ...obj };
+            newObj[tourKey] = false;
+            return newObj;
+          });
         }
       }
     }
-  }, [mounted, steps])
+  }, [mounted, steps]);
 
   const moveToCurrentStep = async (key: string) => {
-    const size = await currentStep[key]?.target.measure()
+    const size = await currentStep[key]?.target.measure();
     if (
       size === undefined ||
       isNaN(size.width) ||
@@ -127,22 +125,22 @@ export const TourGuideProvider = ({
       isNaN(size.x) ||
       isNaN(size.y)
     ) {
-      return
+      return;
     }
     await modal.current?.animateMove({
       width: size.width,
       height: size.height + OFFSET_WIDTH,
       left: Math.round(size.x),
       top: Math.round(size.y) - OFFSET_WIDTH / 2 + (verticalOffset || 0),
-    })
-  }
+    });
+  };
 
   const setCurrentStep = (key: string, step?: IStep) =>
     new Promise<void>(async (resolve) => {
       if (scrollRef && step) {
         const nativeNode =
-          step.wrapper && step.wrapper.current ? step.wrapper.current : step.wrapper
-        const scrollNode = scrollRef.current
+          step.wrapper && step.wrapper.current ? step.wrapper.current : step.wrapper;
+        const scrollNode = scrollRef.current;
 
         await new Promise<void>((res) => {
           if (nativeNode && nativeNode.measureLayout && scrollNode) {
@@ -150,145 +148,139 @@ export const TourGuideProvider = ({
               nativeNode.measureLayout(
                 scrollNode,
                 (_x: number, y: number, _w: number, h: number) => {
-                  const yOffset = y > 0 ? y - h / 2 : 0
-                  scrollNode.scrollTo({ y: yOffset, animated: false })
-                  res()
+                  const yOffset = y > 0 ? y - h / 2 : 0;
+                  scrollNode.scrollTo({ y: yOffset, animated: false });
+                  res();
                 },
                 () => {
-                  res()
-                },
-              )
-            } catch (e) {
-              res()
+                  res();
+                }
+              );
+            } catch {
+              res();
             }
           } else {
-            res()
+            res();
           }
-        })
+        });
 
         requestAnimationFrame(() => {
           updateCurrentStep((currentStep) => {
-            const newStep = { ...currentStep }
-            newStep[key] = step
-            eventEmitter[key]?.emit('stepChange', step)
-            return newStep
-          })
-          resolve()
-        })
+            const newStep = { ...currentStep };
+            newStep[key] = step;
+            eventEmitter[key]?.emit('stepChange', step);
+            return newStep;
+          });
+          resolve();
+        });
       } else {
         updateCurrentStep((currentStep) => {
-          const newStep = { ...currentStep }
-          newStep[key] = step
-          eventEmitter[key]?.emit('stepChange', step)
-          return newStep
-        })
-        resolve()
+          const newStep = { ...currentStep };
+          newStep[key] = step;
+          eventEmitter[key]?.emit('stepChange', step);
+          return newStep;
+        });
+        resolve();
       }
-    })
+    });
 
-  const getNextStep = (
-    key: string,
-    step: IStep | undefined = currentStep[key],
-  ) => utils.getNextStep(steps[key]!, step)
+  const getNextStep = (key: string, step: IStep | undefined = currentStep[key]) =>
+    utils.getNextStep(steps[key]!, step);
 
-  const getPrevStep = (
-    key: string,
-    step: IStep | undefined = currentStep[key],
-  ) => utils.getPrevStep(steps[key]!, step)
+  const getPrevStep = (key: string, step: IStep | undefined = currentStep[key]) =>
+    utils.getPrevStep(steps[key]!, step);
 
-  const getFirstStep = (key: string) => utils.getFirstStep(steps[key]!)
+  const getFirstStep = (key: string) => utils.getFirstStep(steps[key]!);
 
-  const getLastStep = (key: string) => utils.getLastStep(steps[key]!)
+  const getLastStep = (key: string) => utils.getLastStep(steps[key]!);
 
   const isFirstStep = useMemo(() => {
-    const obj: Ctx<boolean> = {} as Ctx<boolean>
+    const obj: Ctx<boolean> = {} as Ctx<boolean>;
     Object.keys(currentStep).forEach((key) => {
-      obj[key] = currentStep[key] === getFirstStep(key)
-    })
-    return obj
-  }, [currentStep])
+      obj[key] = currentStep[key] === getFirstStep(key);
+    });
+    return obj;
+  }, [currentStep]);
 
   const isLastStep = useMemo(() => {
-    const obj: Ctx<boolean> = {} as Ctx<boolean>
+    const obj: Ctx<boolean> = {} as Ctx<boolean>;
     Object.keys(currentStep).forEach((key) => {
-      obj[key] = currentStep[key] === getLastStep(key)
-    })
-    return obj
-  }, [currentStep])
+      obj[key] = currentStep[key] === getLastStep(key);
+    });
+    return obj;
+  }, [currentStep]);
 
-  const _next = (key: string) => setCurrentStep(key, getNextStep(key)!)
+  const _next = (key: string) => setCurrentStep(key, getNextStep(key)!);
 
-  const _prev = (key: string) => setCurrentStep(key, getPrevStep(key)!)
+  const _prev = (key: string) => setCurrentStep(key, getPrevStep(key)!);
 
   const _stop = (key: string) => {
-    setVisible(key, false)
-    setCurrentStep(key, undefined)
-  }
+    setVisible(key, false);
+    setCurrentStep(key, undefined);
+  };
 
   const registerStep = (key: string, step: IStep) => {
     setSteps((previousSteps) => {
-      const newSteps = { ...previousSteps }
+      const newSteps = { ...previousSteps };
       newSteps[key] = {
         ...previousSteps[key],
         [step.name]: step,
-      }
-      return newSteps
-    })
+      };
+      return newSteps;
+    });
     setCanStart((obj) => {
-      const newObj = { ...obj }
-      newObj[key] = true
-      return newObj
-    })
+      const newObj = { ...obj };
+      newObj[key] = true;
+      return newObj;
+    });
     if (!eventEmitter[key]) {
-      eventEmitter[key] = mitt<TourGuideEvents>()
+      eventEmitter[key] = mitt<TourGuideEvents>();
     }
-  }
+  };
 
   const unregisterStep = (key: string, stepName: string) => {
     if (!mounted) {
-      return
+      return;
     }
     setSteps((previousSteps) => {
-      const newSteps = { ...previousSteps }
+      const newSteps = { ...previousSteps };
       newSteps[key] = Object.entries(previousSteps[key] as StepObject)
         .filter(([key]) => key !== stepName)
-        .reduce((obj, [key, val]) => Object.assign(obj, { [key]: val }), {})
-      return newSteps
-    })
-  }
+        .reduce((obj, [key, val]) => Object.assign(obj, { [key]: val }), {});
+      return newSteps;
+    });
+  };
 
-  const getCurrentStep = (key: string) => currentStep[key]
+  const getCurrentStep = (key: string) => currentStep[key];
 
   const start = async (
     key: string,
     fromStep?: number,
-    scrollViewRef?: React.RefObject<ScrollView>,
+    scrollViewRef?: React.RefObject<ScrollView>
   ) => {
     if (scrollViewRef) {
-      setScrollRef(scrollViewRef)
+      setScrollRef(scrollViewRef);
     }
 
-    const currentStep = fromStep
-      ? (steps[key] as StepObject)[fromStep]
-      : getFirstStep(key)
+    const currentStep = fromStep ? (steps[key] as StepObject)[fromStep] : getFirstStep(key);
 
     if (startTries.current > MAX_START_TRIES) {
-      startTries.current = 0
-      return
+      startTries.current = 0;
+      return;
     }
     if (!currentStep) {
-      startTries.current += 1
-      requestAnimationFrame(() => start(key, fromStep, scrollViewRef))
+      startTries.current += 1;
+      requestAnimationFrame(() => start(key, fromStep, scrollViewRef));
     } else {
-      eventEmitter[key]?.emit('start')
-      await setCurrentStep(key, currentStep!)
-      setVisible(key, true)
-      startTries.current = 0
+      eventEmitter[key]?.emit('start');
+      await setCurrentStep(key, currentStep!);
+      setVisible(key, true);
+      startTries.current = 0;
     }
-  }
-  const next = () => _next(tourKey)
-  const prev = () => _prev(tourKey)
-  const stop = () => _stop(tourKey)
+  };
+  const next = () => _next(tourKey);
+  const prev = () => _prev(tourKey);
+  const stop = () => _stop(tourKey);
   return (
     <View style={[styles.container, wrapperStyle]}>
       <TourGuideContext.Provider
@@ -329,11 +321,11 @@ export const TourGuideProvider = ({
         />
       </TourGuideContext.Provider>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-})
+});

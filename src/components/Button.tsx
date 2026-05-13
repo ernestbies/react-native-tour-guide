@@ -1,12 +1,12 @@
-import * as React from 'react'
-import { View, Text, StyleProp, ViewStyle } from 'react-native'
+import * as React from 'react';
+import { View, Text, StyleProp, ViewStyle } from 'react-native';
 
-import styles from './style'
+import styles from './style';
 
 interface Props {
-  wrapperStyle?: StyleProp<ViewStyle>
-  style?: StyleProp<ViewStyle>
-  children?: any
+  wrapperStyle?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
+  children?: any;
 }
 
 export const Button = ({ wrapperStyle, style, children, ...rest }: Props) => (
@@ -15,4 +15,4 @@ export const Button = ({ wrapperStyle, style, children, ...rest }: Props) => (
       {children}
     </Text>
   </View>
-)
+);

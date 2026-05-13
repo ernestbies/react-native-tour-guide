@@ -1,19 +1,19 @@
-import { StyleSheet, ViewStyle, TextStyle } from 'react-native'
+import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
-export const Z_INDEX: number = 100
-export const MARGIN: number = 13
-export const OFFSET_WIDTH: number = 20
+export const Z_INDEX: number = 100;
+export const MARGIN: number = 13;
+export const OFFSET_WIDTH: number = 20;
 
 export interface IStyle {
-  container: ViewStyle
-  tooltip: ViewStyle
-  tooltipText: TextStyle
-  tooltipContainer: ViewStyle
-  button: ViewStyle
-  buttonText: TextStyle
-  bottomBar: ViewStyle
-  overlayContainer: ViewStyle
-  nonInteractionPlaceholder: ViewStyle
+  container: ViewStyle;
+  tooltip: ViewStyle;
+  tooltipText: TextStyle;
+  tooltipContainer: ViewStyle;
+  button: ViewStyle;
+  buttonText: TextStyle;
+  bottomBar: ViewStyle;
+  overlayContainer: ViewStyle;
+  nonInteractionPlaceholder: ViewStyle;
 }
 
 export default StyleSheet.create<IStyle>({
@@ -68,4 +68,4 @@ export default StyleSheet.create<IStyle>({
     bottom: 0,
     right: 0,
   },
-})
+});

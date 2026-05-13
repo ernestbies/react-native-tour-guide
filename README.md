@@ -49,58 +49,54 @@ cd ios && pod install
 Wrap your app with `TourGuideProvider`, then mark UI elements with `TourGuideZone`.
 
 ```tsx
-import * as React from 'react'
-import { Button, Text, View } from 'react-native'
-import {
-  TourGuideProvider,
-  TourGuideZone,
-  useTourGuideController,
-} from 'react-native-tour-guide'
+import * as React from 'react';
+import { Button, Text, View } from 'react-native';
+import { TourGuideProvider, TourGuideZone, useTourGuideController } from 'react-native-tour-guide';
 
 const AppContent = () => {
-  const { canStart, start, stop, eventEmitter } = useTourGuideController()
+  const { canStart, start, stop, eventEmitter } = useTourGuideController();
 
   React.useEffect(() => {
     if (!eventEmitter) {
-      return
+      return;
     }
 
-    const onStart = () => console.log('Tour started')
-    const onStop = () => console.log('Tour stopped')
-    const onStepChange = () => console.log('Step changed')
+    const onStart = () => console.log('Tour started');
+    const onStop = () => console.log('Tour stopped');
+    const onStepChange = () => console.log('Step changed');
 
-    eventEmitter.on('start', onStart)
-    eventEmitter.on('stop', onStop)
-    eventEmitter.on('stepChange', onStepChange)
+    eventEmitter.on('start', onStart);
+    eventEmitter.on('stop', onStop);
+    eventEmitter.on('stepChange', onStepChange);
 
     return () => {
-      eventEmitter.off('start', onStart)
-      eventEmitter.off('stop', onStop)
-      eventEmitter.off('stepChange', onStepChange)
-    }
-  }, [eventEmitter])
+      eventEmitter.off('start', onStart);
+      eventEmitter.off('stop', onStop);
+      eventEmitter.off('stepChange', onStepChange);
+    };
+  }, [eventEmitter]);
 
   return (
     <View>
-      <TourGuideZone zone={1} text='This is the title'>
+      <TourGuideZone zone={1} text="This is the title">
         <Text>Dashboard</Text>
       </TourGuideZone>
 
-      <TourGuideZone zone={2} text='Tap here to continue'>
-        <Button title='Primary action' onPress={() => {}} />
+      <TourGuideZone zone={2} text="Tap here to continue">
+        <Button title="Primary action" onPress={() => {}} />
       </TourGuideZone>
 
-      <Button disabled={!canStart} title='Start tour' onPress={() => start()} />
-      <Button title='Stop tour' onPress={() => stop()} />
+      <Button disabled={!canStart} title="Start tour" onPress={() => start()} />
+      <Button title="Stop tour" onPress={() => stop()} />
     </View>
-  )
-}
+  );
+};
 
 export const App = () => (
   <TourGuideProvider borderRadius={12}>
     <AppContent />
   </TourGuideProvider>
-)
+);
 ```
 
 ## API
@@ -110,11 +106,7 @@ export const App = () => (
 Place this component near the root of your app.
 
 ```tsx
-<TourGuideProvider
-  borderRadius={12}
-  maskOffset={8}
-  backdropColor='rgba(0, 0, 0, 0.55)'
->
+<TourGuideProvider borderRadius={12} maskOffset={8} backdropColor="rgba(0, 0, 0, 0.55)">
   <App />
 </TourGuideProvider>
 ```
@@ -141,7 +133,7 @@ Common props:
 Wrap a component that should be highlighted by the tour.
 
 ```tsx
-<TourGuideZone zone={1} text='Profile settings' borderRadius={8}>
+<TourGuideZone zone={1} text="Profile settings" borderRadius={8}>
   <ProfileButton />
 </TourGuideZone>
 ```
@@ -164,7 +156,7 @@ Common props:
 Supported shapes:
 
 ```ts
-type Shape = 'circle' | 'rectangle' | 'circle_and_keep' | 'rectangle_and_keep'
+type Shape = 'circle' | 'rectangle' | 'circle_and_keep' | 'rectangle_and_keep';
 ```
 
 ### `TourGuideZoneByPosition`
@@ -175,7 +167,7 @@ Use this when the highlighted area is not tied to a concrete child component.
 <TourGuideZoneByPosition
   isTourGuide
   zone={3}
-  text='This area is important'
+  text="This area is important"
   top={80}
   left={24}
   width={180}
@@ -196,7 +188,7 @@ const {
   getCurrentStep,
   TourGuideZone,
   TourGuideZoneByPosition,
-} = useTourGuideController()
+} = useTourGuideController();
 ```
 
 Returned values:
@@ -216,17 +208,17 @@ Returned values:
 Pass a `tourKey` to `useTourGuideController` when your app has more than one independent tour.
 
 ```tsx
-const { start, TourGuideZone } = useTourGuideController('onboarding')
+const { start, TourGuideZone } = useTourGuideController('onboarding');
 
 return (
   <>
-    <TourGuideZone zone={1} text='First onboarding step'>
+    <TourGuideZone zone={1} text="First onboarding step">
       <Text>Welcome</Text>
     </TourGuideZone>
 
-    <Button title='Start onboarding' onPress={() => start()} />
+    <Button title="Start onboarding" onPress={() => start()} />
   </>
-)
+);
 ```
 
 You can also pass the same `tourKey` manually to `TourGuideZone`.
@@ -236,20 +228,20 @@ You can also pass the same `tourKey` manually to `TourGuideZone`.
 You can pass a scroll view ref to `start` so the active target can be scrolled into view before measurement.
 
 ```tsx
-const scrollRef = React.useRef<ScrollView>(null)
-const { start } = useTourGuideController()
+const scrollRef = React.useRef<ScrollView>(null);
+const { start } = useTourGuideController();
 
 return (
   <>
     <ScrollView ref={scrollRef}>
-      <TourGuideZone zone={1} text='A field inside the scroll view'>
+      <TourGuideZone zone={1} text="A field inside the scroll view">
         <Text>Account details</Text>
       </TourGuideZone>
     </ScrollView>
 
-    <Button title='Start' onPress={() => start(undefined, scrollRef)} />
+    <Button title="Start" onPress={() => start(undefined, scrollRef)} />
   </>
-)
+);
 ```
 
 ## Custom Tooltip
@@ -283,9 +275,9 @@ const CustomTooltip = ({
 `eventEmitter` uses [`mitt`](https://github.com/developit/mitt).
 
 ```tsx
-eventEmitter.on('start', () => {})
-eventEmitter.on('stop', () => {})
-eventEmitter.on('stepChange', (step) => {})
+eventEmitter.on('start', () => {});
+eventEmitter.on('stop', () => {});
+eventEmitter.on('stepChange', (step) => {});
 ```
 
 ## Labels

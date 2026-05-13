@@ -1,30 +1,24 @@
-import * as React from 'react'
-import {
-  DimensionValue,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native'
-import { BorderRadiusObject, Shape } from '../types'
-import { TourGuideZone } from './TourGuideZone'
+import * as React from 'react';
+import { DimensionValue, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { BorderRadiusObject, Shape } from '../types';
+import { TourGuideZone } from './TourGuideZone';
 
 export interface TourGuideZoneByPositionProps {
-  zone: number
-  tourKey?: string
-  isTourGuide?: boolean
-  top?: DimensionValue
-  left?: DimensionValue
-  right?: DimensionValue
-  bottom?: DimensionValue
-  width?: DimensionValue
-  height?: DimensionValue
-  shape?: Shape
-  borderRadiusObject?: BorderRadiusObject
-  containerStyle?: StyleProp<ViewStyle>
-  keepTooltipPosition?: boolean
-  tooltipBottomOffset?: number
-  text?: string
+  zone: number;
+  tourKey?: string;
+  isTourGuide?: boolean;
+  top?: DimensionValue;
+  left?: DimensionValue;
+  right?: DimensionValue;
+  bottom?: DimensionValue;
+  width?: DimensionValue;
+  height?: DimensionValue;
+  shape?: Shape;
+  borderRadiusObject?: BorderRadiusObject;
+  containerStyle?: StyleProp<ViewStyle>;
+  keepTooltipPosition?: boolean;
+  tooltipBottomOffset?: number;
+  text?: string;
 }
 
 export const TourGuideZoneByPosition = ({
@@ -45,14 +39,11 @@ export const TourGuideZoneByPosition = ({
   text,
 }: TourGuideZoneByPositionProps) => {
   if (!isTourGuide) {
-    return null
+    return null;
   }
 
   return (
-    <View
-      pointerEvents='none'
-      style={[StyleSheet.absoluteFill, containerStyle]}
-    >
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, containerStyle]}>
       <TourGuideZone
         isTourGuide
         {...{
@@ -75,5 +66,5 @@ export const TourGuideZoneByPosition = ({
         }}
       />
     </View>
-  )
-}
+  );
+};

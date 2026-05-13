@@ -1,7 +1,5 @@
 {
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "compilerOptions": {
     "target": "es2019",
     "module": "esnext",
@@ -27,15 +25,7 @@
     "forceConsistentCasingInFileNames": true,
     "strictFunctionTypes": true,
     "noFallthroughCasesInSwitch": true,
-    "lib": [
-      "dom",
-      "esnext"
-    ]
+    "lib": ["dom", "esnext"]
   },
-  "exclude": [
-    "node_modules",
-    "lib",
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx"
-  ]
+  "exclude": ["node_modules", "lib", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }

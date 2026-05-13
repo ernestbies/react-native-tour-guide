@@ -1,75 +1,63 @@
-import * as React from 'react'
-import { ScrollView } from 'react-native'
-import { TourGuideContext } from '../components/TourGuideContext'
-import { TourGuideZone, TourGuideZoneProps } from '../components/TourGuideZone'
+import * as React from 'react';
+import { ScrollView } from 'react-native';
+import { TourGuideContext } from '../components/TourGuideContext';
+import { TourGuideZone, TourGuideZoneProps } from '../components/TourGuideZone';
 import {
   TourGuideZoneByPosition,
   TourGuideZoneByPositionProps,
-} from '../components/TourGuideZoneByPosition'
+} from '../components/TourGuideZoneByPosition';
 
 export const useTourGuideController = (tourKey?: string) => {
-  const {
-    start,
-    canStart,
-    stop,
-    eventEmitter,
-    getCurrentStep,
-    setTourKey,
-    setScrollRef,
-  } = React.useContext(TourGuideContext)
+  const { start, canStart, stop, eventEmitter, getCurrentStep, setTourKey, setScrollRef } =
+    React.useContext(TourGuideContext);
 
-  const key = tourKey ?? '_default'
+  const key = tourKey ?? '_default';
 
-  const _start = (
-    fromStep?: number,
-    scrollViewRef?: React.RefObject<ScrollView>,
-  ) => {
+  const _start = (fromStep?: number, scrollViewRef?: React.RefObject<ScrollView>) => {
     if (setTourKey) {
-      setTourKey(key)
+      setTourKey(key);
     }
     if (start) {
-      start(key, fromStep, scrollViewRef)
+      start(key, fromStep, scrollViewRef);
     }
-  }
+  };
   const _stop = () => {
     if (stop) {
-      stop(key)
+      stop(key);
     }
-  }
-  const _eventEmitter = eventEmitter ? eventEmitter[key] : undefined
-  const _canStart = canStart ? canStart[key] : undefined
+  };
+  const _eventEmitter = eventEmitter ? eventEmitter[key] : undefined;
+  const _canStart = canStart ? canStart[key] : undefined;
   const _getCurrentStep = () => {
     if (getCurrentStep) {
-      return getCurrentStep(key)
+      return getCurrentStep(key);
     }
-    return undefined
-  }
+    return undefined;
+  };
 
   React.useEffect(() => {
     if (setTourKey) {
-      setTourKey(key)
+      setTourKey(key);
     }
-  }, [])
+  }, []);
 
-  const KeyedTourGuideZone: React.FC<Omit<TourGuideZoneProps, 'tourKey'>> =
-    React.useCallback(
-      ({ children, ...rest }) => {
-        return (
-          <TourGuideZone {...rest} tourKey={key}>
-            {children}
-          </TourGuideZone>
-        )
-      },
-      [key],
-    )
-  const KeyedTourGuideZoneByPosition: React.FC<
-    Omit<TourGuideZoneByPositionProps, 'tourKey'>
-  > = React.useCallback(
-    (props) => {
-      return <TourGuideZoneByPosition {...props} tourKey={key} />
+  const KeyedTourGuideZone: React.FC<Omit<TourGuideZoneProps, 'tourKey'>> = React.useCallback(
+    ({ children, ...rest }) => {
+      return (
+        <TourGuideZone {...rest} tourKey={key}>
+          {children}
+        </TourGuideZone>
+      );
     },
-    [key],
-  )
+    [key]
+  );
+  const KeyedTourGuideZoneByPosition: React.FC<Omit<TourGuideZoneByPositionProps, 'tourKey'>> =
+    React.useCallback(
+      (props) => {
+        return <TourGuideZoneByPosition {...props} tourKey={key} />;
+      },
+      [key]
+    );
 
   return {
     start: _start,
@@ -81,5 +69,5 @@ export const useTourGuideController = (tourKey?: string) => {
     TourGuideZone: KeyedTourGuideZone,
     TourGuideZoneByPosition: KeyedTourGuideZoneByPosition,
     setScrollRef,
-  }
-}
+  };
+};

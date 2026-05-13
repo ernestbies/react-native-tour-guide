@@ -1,53 +1,53 @@
-import * as React from 'react'
-import { BorderRadiusObject, Shape } from '../types'
-import { ITourGuideContext } from './TourGuideContext'
+import * as React from 'react';
+import { BorderRadiusObject, Shape } from '../types';
+import { ITourGuideContext } from './TourGuideContext';
 
-declare var __TEST__: boolean
+declare var __TEST__: boolean;
 
 interface Props {
-  name: string
-  text: string
-  order: number
-  tourKey: string
-  active?: boolean
-  shape?: Shape
-  context: ITourGuideContext
-  children?: any
-  maskOffset?: number
-  borderRadiusObject?: BorderRadiusObject
-  borderRadius?: number
-  keepTooltipPosition?: boolean
-  tooltipBottomOffset?: number
+  name: string;
+  text: string;
+  order: number;
+  tourKey: string;
+  active?: boolean;
+  shape?: Shape;
+  context: ITourGuideContext;
+  children?: any;
+  maskOffset?: number;
+  borderRadiusObject?: BorderRadiusObject;
+  borderRadius?: number;
+  keepTooltipPosition?: boolean;
+  tooltipBottomOffset?: number;
 }
 
 export class ConnectedStep extends React.Component<Props> {
   static defaultProps = {
     active: true,
-  }
-  wrapperRef = React.createRef<any>()
+  };
+  wrapperRef = React.createRef<any>();
   componentDidMount() {
     if (this.props.active) {
-      this.register()
+      this.register();
     }
   }
 
   componentDidUpdate(prevProps: Props) {
     if (this.props.active !== prevProps.active) {
       if (this.props.active) {
-        this.register()
+        this.register();
       } else {
-        this.unregister()
+        this.unregister();
       }
     }
   }
 
   componentWillUnmount() {
-    this.unregister()
+    this.unregister();
   }
 
   setNativeProps(obj: any) {
     if (this.wrapperRef.current) {
-      this.wrapperRef.current.setNativeProps(obj)
+      this.wrapperRef.current.setNativeProps(obj);
     }
   }
 
@@ -57,17 +57,17 @@ export class ConnectedStep extends React.Component<Props> {
         target: this,
         wrapper: this.wrapperRef,
         ...this.props,
-      })
+      });
     } else {
-      console.warn('context undefined')
+      console.warn('context undefined');
     }
   }
 
   unregister() {
     if (this.props.context && this.props.context.unregisterStep) {
-      this.props.context.unregisterStep(this.props.tourKey, this.props.name)
+      this.props.context.unregisterStep(this.props.tourKey, this.props.name);
     } else {
-      console.warn('unregisterStep undefined')
+      console.warn('unregisterStep undefined');
     }
   }
 
@@ -79,48 +79,41 @@ export class ConnectedStep extends React.Component<Props> {
           y: 0,
           width: 0,
           height: 0,
-        }),
-      )
+        })
+      );
     }
 
     return new Promise((resolve, reject) => {
       const measure = () => {
         // Wait until the wrapper element appears
-        const node = this.wrapperRef.current
+        const node = this.wrapperRef.current;
         if (node && node.measure) {
-          const { borderRadius } = this.props
+          const { borderRadius } = this.props;
           node.measure(
-            (
-              _ox: number,
-              _oy: number,
-              width: number,
-              height: number,
-              x: number,
-              y: number,
-            ) =>
+            (_ox: number, _oy: number, width: number, height: number, x: number, y: number) =>
               resolve({
                 x: borderRadius ? x + borderRadius : x,
                 y,
                 width: borderRadius ? width - borderRadius * 2 : width,
                 height,
               }),
-            reject,
-          )
+            reject
+          );
         } else {
-          requestAnimationFrame(measure)
+          requestAnimationFrame(measure);
         }
-      }
+      };
 
-      requestAnimationFrame(measure)
-    })
+      requestAnimationFrame(measure);
+    });
   }
 
   render() {
     const copilot = {
       ref: this.wrapperRef,
       onLayout: () => {}, // Android hack
-    }
+    };
 
-    return React.cloneElement(this.props.children, { copilot })
+    return React.cloneElement(this.props.children, { copilot });
   }
 }
