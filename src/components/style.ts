@@ -2,7 +2,7 @@ import { StyleSheet, ViewStyle, TextStyle } from 'react-native'
 
 export const Z_INDEX: number = 100
 export const MARGIN: number = 13
-export const OFFSET_WIDTH: number = 4
+export const OFFSET_WIDTH: number = 20
 
 export interface IStyle {
   container: ViewStyle

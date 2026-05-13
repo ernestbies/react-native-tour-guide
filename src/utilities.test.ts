@@ -146,7 +146,7 @@ describe('getPrevStep', () => {
 describe('getNextStep', () => {
   test('empty steps array', () => {
     const nextStep = utilities.getNextStep([], undefined)
-    expect(nextStep).toBe(undefined)
+    expect(nextStep).toBe(null)
   })
 
   test('non-empty steps array', () => {

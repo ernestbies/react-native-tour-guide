@@ -1,5 +1,11 @@
 import * as React from 'react'
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
+import {
+  DimensionValue,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native'
 import { BorderRadiusObject, Shape } from '../types'
 import { TourGuideZone } from './TourGuideZone'
 
@@ -7,12 +13,12 @@ export interface TourGuideZoneByPositionProps {
   zone: number
   tourKey?: string
   isTourGuide?: boolean
-  top?: number | string
-  left?: number | string
-  right?: number | string
-  bottom?: number | string
-  width?: number | string
-  height?: number | string
+  top?: DimensionValue
+  left?: DimensionValue
+  right?: DimensionValue
+  bottom?: DimensionValue
+  width?: DimensionValue
+  height?: DimensionValue
   shape?: Shape
   borderRadiusObject?: BorderRadiusObject
   containerStyle?: StyleProp<ViewStyle>
@@ -45,7 +51,7 @@ export const TourGuideZoneByPosition = ({
   return (
     <View
       pointerEvents='none'
-      style={[StyleSheet.absoluteFillObject, containerStyle]}
+      style={[StyleSheet.absoluteFill, containerStyle]}
     >
       <TourGuideZone
         isTourGuide

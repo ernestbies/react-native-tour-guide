@@ -24,7 +24,7 @@ export class ConnectedStep extends React.Component<Props> {
   static defaultProps = {
     active: true,
   }
-  wrapper: any
+  wrapperRef = React.createRef<any>()
   componentDidMount() {
     if (this.props.active) {
       this.register()
@@ -46,14 +46,16 @@ export class ConnectedStep extends React.Component<Props> {
   }
 
   setNativeProps(obj: any) {
-    this.wrapper.setNativeProps(obj)
+    if (this.wrapperRef.current) {
+      this.wrapperRef.current.setNativeProps(obj)
+    }
   }
 
   register() {
     if (this.props.context && this.props.context.registerStep) {
       this.props.context.registerStep(this.props.tourKey, {
         target: this,
-        wrapper: this.wrapper,
+        wrapper: this.wrapperRef,
         ...this.props,
       })
     } else {
@@ -84,9 +86,10 @@ export class ConnectedStep extends React.Component<Props> {
     return new Promise((resolve, reject) => {
       const measure = () => {
         // Wait until the wrapper element appears
-        if (this.wrapper && this.wrapper.measure) {
+        const node = this.wrapperRef.current
+        if (node && node.measure) {
           const { borderRadius } = this.props
-          this.wrapper.measure(
+          node.measure(
             (
               _ox: number,
               _oy: number,
@@ -114,9 +117,7 @@ export class ConnectedStep extends React.Component<Props> {
 
   render() {
     const copilot = {
-      ref: (wrapper: any) => {
-        this.wrapper = wrapper
-      },
+      ref: this.wrapperRef,
       onLayout: () => {}, // Android hack
     }
 

@@ -1,395 +1,312 @@
-<h1 align="center">RN-TourGuide</h1>
+# React Native Tour Guide
 
-<p align="center">
-  A flexible <strong>tourguide</strong> for your react native app!
-  <br/><small>🎉 Webable 🎉</small>
-  <br/><small>(a rewriting of react-native-copilot)</small>
-</p>
+Interactive step-by-step tours for React Native applications.
 
-<p align="center">
-  <img width="250" src="https://www.dropbox.com/s/9heua3qgd66125k/rn-tourguide.gif?dl=0&raw=1" alt="RN Tourguide" />
-</p>
-<p align="center">
-    <a href="https://xcarpentier.github.io/rn-tourguide/">
-      🎉DEMO WEB 🎉
-    </a>
-</p>
+This package is an improved fork of [`rn-tourguide`](https://github.com/xcarpentier/rn-tourguide), which itself was based on [`react-native-copilot`](https://github.com/mohebifar/react-native-copilot). The goal of this fork is to keep the familiar API while making the package easier to maintain, publish, and use in modern React Native projects.
 
-<div align="center">
-  <p align="center">
-    <a href="https://www.npmjs.com/package/rn-tourguide">
-      <img alt="npm downloads" src="https://img.shields.io/npm/dm/rn-tourguide.svg"/>
-    </a>
-    <a href="https://www.npmjs.com/package/rn-tourguide">
-      <img src="https://img.shields.io/npm/v/rn-tourguide.svg" alt="NPM Version" />
-    </a>
-    <a href="http://reactnative.gallery/xcarpentier/rn-tourguide">
-      <img src="https://img.shields.io/badge/reactnative.gallery-%F0%9F%8E%AC-green.svg"/></a>
-    </a>
-    <a href="#hire-an-expert">
-      <img src="https://img.shields.io/badge/%F0%9F%92%AA-hire%20an%20expert-brightgreen"/>
-    </a>
-  </p>
-</div>
+## What Changed
+
+- Refactored the package into a library-only build with no bundled sample application or Expo runtime.
+- Updated dependencies and peer dependency boundaries for npm publishing.
+- Improved TypeScript support and declaration generation.
+- Added safer refs for measured tour targets.
+- Added optional scroll-view support when starting a tour.
+- Improved mask and tooltip animations.
+- Improved tooltip spacing around the highlighted target.
+- Kept compatibility with the core `rn-tourguide` concepts: provider, zones, keyed tours, custom tooltips, events, labels, and SVG masks.
+
+## Credits
+
+This project builds on previous open-source work:
+
+- [`xcarpentier/rn-tourguide`](https://github.com/xcarpentier/rn-tourguide)
+- [`mohebifar/react-native-copilot`](https://github.com/mohebifar/react-native-copilot)
+
+This repository is a fork-derived package. Original authors are credited in the license file alongside the current maintainer.
 
 ## Installation
 
-```
-yarn add rn-tourguide
-```
-
-```
-yarn add react-native-svg
-react-native link react-native-svg
+```sh
+yarn add react-native-tour-guide react-native-svg
 ```
 
-If you are using Expo:
+or:
 
-```
-expo install react-native-svg
+```sh
+npm install react-native-tour-guide react-native-svg
 ```
 
-## Usage
+`react`, `react-native`, and `react-native-svg` are peer dependencies. Your app must provide them.
+
+For bare React Native projects, install native SVG dependencies as required by `react-native-svg`:
+
+```sh
+cd ios && pod install
+```
+
+## Basic Usage
+
+Wrap your app with `TourGuideProvider`, then mark UI elements with `TourGuideZone`.
 
 ```tsx
+import * as React from 'react'
+import { Button, Text, View } from 'react-native'
 import {
-  TourGuideProvider, // Main provider
-  TourGuideZone, // Main wrapper of highlight component
-  TourGuideZoneByPosition, // Component to use mask on overlay (ie, position absolute)
-  useTourGuideController, // hook to start, etc.
-} from 'rn-tourguide'
-
-// Add <TourGuideProvider/> at the root of you app!
-function App() {
-  return (
-// If you added a statusbar in Andoid set androidStatusBarVisible: true as well to avoid vertical position issues
-    <TourGuideProvider {...{ borderRadius: 16 }}>
-      <AppContent />
-    </TourGuideProvider>
-  )
-}
+  TourGuideProvider,
+  TourGuideZone,
+  useTourGuideController,
+} from 'react-native-tour-guide'
 
 const AppContent = () => {
-  const iconProps = { size: 40, color: '#888' }
+  const { canStart, start, stop, eventEmitter } = useTourGuideController()
 
-  // Use Hooks to control!
-  const {
-    canStart, // a boolean indicate if you can start tour guide
-    start, // a function to start the tourguide
-    stop, // a function  to stopping it
-    eventEmitter, // an object for listening some events
-  } = useTourGuideController()
-
-  // Can start at mount 🎉
-  // you need to wait until everything is registered 😁
   React.useEffect(() => {
-    if (canStart) {
-      // 👈 test if you can start otherwise nothing will happen
-      start()
+    if (!eventEmitter) {
+      return
     }
-  }, [canStart]) // 👈 don't miss it!
 
-  const handleOnStart = () => console.log('start')
-  const handleOnStop = () => console.log('stop')
-  const handleOnStepChange = () => console.log(`stepChange`)
+    const onStart = () => console.log('Tour started')
+    const onStop = () => console.log('Tour stopped')
+    const onStepChange = () => console.log('Step changed')
 
-  React.useEffect(() => {
-    eventEmitter.on('start', handleOnStart)
-    eventEmitter.on('stop', handleOnStop)
-    eventEmitter.on('stepChange', handleOnStepChange)
+    eventEmitter.on('start', onStart)
+    eventEmitter.on('stop', onStop)
+    eventEmitter.on('stepChange', onStepChange)
 
     return () => {
-      eventEmitter.off('start', handleOnStart)
-      eventEmitter.off('stop', handleOnStop)
-      eventEmitter.off('stepChange', handleOnStepChange)
+      eventEmitter.off('start', onStart)
+      eventEmitter.off('stop', onStop)
+      eventEmitter.off('stepChange', onStepChange)
     }
-  }, [])
+  }, [eventEmitter])
 
   return (
-    <View style={styles.container}>
-      {/*
-
-          Use TourGuideZone only to wrap your component
-
-      */}
-      <TourGuideZone
-        zone={2}
-        text={'A react-native-copilot remastered! 🎉'}
-        borderRadius={16}
-      >
-        <Text style={styles.title}>
-          {'Welcome to the demo of\n"rn-tourguide"'}
-        </Text>
+    <View>
+      <TourGuideZone zone={1} text='This is the title'>
+        <Text>Dashboard</Text>
       </TourGuideZone>
-      <View style={styles.middleView}>
-        <TouchableOpacity style={styles.button} onPress={() => start()}>
-          <Text style={styles.buttonText}>START THE TUTORIAL!</Text>
-        </TouchableOpacity>
 
-        <TourGuideZone zone={3} shape={'rectangle_and_keep'}>
-          <TouchableOpacity style={styles.button} onPress={() => start(4)}>
-            <Text style={styles.buttonText}>Step 4</Text>
-          </TouchableOpacity>
-        </TourGuideZone>
-        <TouchableOpacity style={styles.button} onPress={() => start(2)}>
-          <Text style={styles.buttonText}>Step 2</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={stop}>
-          <Text style={styles.buttonText}>Stop</Text>
-        </TouchableOpacity>
-        <TourGuideZone
-          zone={1}
-          shape='circle'
-          text={'With animated SVG morphing with awesome flubber 🍮💯'}
-        >
-          <Image source={{ uri }} style={styles.profilePhoto} />
-        </TourGuideZone>
-      </View>
-      <View style={styles.row}>
-        <TourGuideZone zone={4} shape={'circle'}>
-          <Ionicons name='ios-contact' {...iconProps} />
-        </TourGuideZone>
-        <Ionicons name='ios-chatbubbles' {...iconProps} />
-        <Ionicons name='ios-globe' {...iconProps} />
-        <TourGuideZone zone={5}>
-          <Ionicons name='ios-navigate' {...iconProps} />
-        </TourGuideZone>
-        <TourGuideZone zone={6} shape={'circle'}>
-          <Ionicons name='ios-rainy' {...iconProps} />
-        </TourGuideZone>
-        <TourGuideZoneByPosition
-          zone={7}
-          shape={'circle'}
-          isTourGuide
-          bottom={30}
-          left={35}
-          width={300}
-          height={300}
-        />
-      </View>
+      <TourGuideZone zone={2} text='Tap here to continue'>
+        <Button title='Primary action' onPress={() => {}} />
+      </TourGuideZone>
+
+      <Button disabled={!canStart} title='Start tour' onPress={() => start()} />
+      <Button title='Stop tour' onPress={() => stop()} />
     </View>
   )
 }
-```
 
-`TourGuide` props:
-
-```ts
-interface TourGuideZoneProps {
-  zone: number // A positive number indicating the order of the step in the entire walkthrough.
-  tourKey?: string // A string indicating which tour the zone belongs to
-  isTourGuide?: boolean // return children without wrapping id false
-  text?: string // text in tooltip
-  shape?: Shape // which shape
-  maskOffset?: number // offset around zone
-  borderRadius?: number // round corner when rectangle
-  keepTooltipPosition?: boolean
-  tooltipBottomOffset?: number
-  children: React.ReactNode
-}
-
-type Shape = 'circle' | 'rectangle' | 'circle_and_keep' | 'rectangle_and_keep'
-
-export interface TourGuideProviderProps {
-  tooltipComponent?: React.ComponentType<TooltipProps>
-  tooltipStyle?: StyleProp<ViewStyle>
-  labels?: Labels
-  startAtMount?: boolean | string //  start at mount, boolean for single tours, string for multiple tours
-  androidStatusBarVisible?: boolean
-  backdropColor?: string
-  verticalOffset?: number
-  wrapperStyle?: StyleProp<ViewStyle>
-  maskOffset?: number
-  borderRadius?: number
-  animationDuration?: number
-  children: React.ReactNode
-  dismissOnPress?: boolean
-  preventOutsideInteraction?:boolean
-}
-
-interface TooltipProps {
-  isFirstStep?: boolean
-  isLastStep?: boolean
-  currentStep: Step
-  labels?: Labels
-  handleNext?(): void
-  handlePrev?(): void
-  handleStop?(): void
-}
-
-interface Labels {
-  skip?: string
-  previous?: string
-  next?: string
-  finish?: string
-}
-```
-
-In order to start the tutorial, you can call the `start` function from `useTourGuideController` hook:
-
-```js
-function HomeScreen() {
-  const { start } = useTourGuideController()
-
-  React.useEffect(() => {
-    start()
-  }, [])
-
-
-  render() {
-    // ...
-  }
-}
-
-export default HomeScreen
-```
-
-If you are looking for a working example, please check out [this link](https://github.com/xcarpentier/rn-tourguide/blob/master/App.tsx).
-
-## Using Multiple Tours
-
-If you'd like to have multiple tours (different pages, differnt user types, etc) you can pass in a `tourKey` to `useTourGuideController` to create a tour that is keyed to that `tourKey`. **Important** If you use a keyed tour, in order for the `TourGuideZone` components to register correctly you _must_ do one of two things. Either (1) pass along the `tourKey` to the `TourGuideZone` components, or (2) extract the `TourGuideZone` components from the hook itself
-
-(1) If you want to pass along the tourKey
-
-```ts
-import { TourGuideZone, useTourGuideController } from 'rn-tourguide'
-const {
-  canStart, // <-- These are all keyed to the tourKey
-  start, // <-- These are all keyed to the tourKey
-  stop, // <-- These are all keyed to the tourKey
-  eventEmitter, // <-- These are all keyed to the tourKey
-  tourKey, // <-- Extract the tourKey
-} = useTourGuideController('results')
-
-return (
-  <TourGuideZone
-    tourKey={tourKey} // <-- Pass in the tourKey
-    zone={2}
-    text='Check on your results'
-  >
-    {/** Children */}
-  </TourGuideZone>
+export const App = () => (
+  <TourGuideProvider borderRadius={12}>
+    <AppContent />
+  </TourGuideProvider>
 )
 ```
 
-Or (2) if you want to extract the components directly from the hook
+## API
 
-```ts
-import { useTourGuideController } from 'rn-tourguide'
-const { canStart, start, stop, TourGuideZone } =
-  useTourGuideController('results')
+### `TourGuideProvider`
 
-return (
-  <TourGuideZone // <-- No need to pass in the tourKey
-    zone={2}
-    text='Check on your results'
-  >
-    {/** Children */}
-  </TourGuideZone>
-)
-```
-
-If you use multiple tours and would like to use the `startAtMount` prop on the `TourGuideProvider` component, then pass in the string of the tour you'd like to start
-
-### Custom tooltip component
-
-You can customize the tooltip by passing a component to the `copilot` HOC maker. If you are looking for an example tooltip component, take a look at [the default tooltip implementation](https://github.com/xcarpentier/rn-tourguide/blob/master/src/components/Tooltip.tsx).
-
-```js
-const TooltipComponent = ({
-  isFirstStep,
-  isLastStep,
-  handleNext,
-  handlePrev,
-  handleStop,
-  currentStep,
-}) => (
-  // ...
-);
-
-<TourGuideProvider {...{tooltipComponent: TooltipComponent}}>
-// ...
-</TourGuideProvider>
-```
-
-### Custom tooltip styling
-
-You can customize tooltips style:
-
-```tsx
-const style = {
-  backgroundColor: '#9FA8DA',
-  borderRadius: 10,
-  paddingTop: 5,
-}
-
-<TourGuideProvider {...{ tooltipStyle: style }}>
-// ...
-</TourGuideProvider>
-```
-
-### Custom mask color
-
-You can customize the mask color - default is `rgba(0, 0, 0, 0.4)`, by passing a color string to the `copilot` HOC maker.
-
-```tsx
-<TourGuideProvider {...{ backdropColor: 'rgba(50, 50, 100, 0.9)' }}>
-  // ...
-</TourGuideProvider>
-```
-
-### Custom labels (for i18n)
-
-You can localize labels:
+Place this component near the root of your app.
 
 ```tsx
 <TourGuideProvider
-  {...{
-    labels: {
-      previous: 'Vorheriger',
-      next: 'Nächster',
-      skip: 'Überspringen',
-      finish: 'Beenden',
-    },
+  borderRadius={12}
+  maskOffset={8}
+  backdropColor='rgba(0, 0, 0, 0.55)'
+>
+  <App />
+</TourGuideProvider>
+```
+
+Common props:
+
+| Prop                        | Type                                | Description                                                                  |
+| --------------------------- | ----------------------------------- | ---------------------------------------------------------------------------- |
+| `tooltipComponent`          | `React.ComponentType<TooltipProps>` | Custom tooltip renderer.                                                     |
+| `tooltipStyle`              | `StyleProp<ViewStyle>`              | Style applied to the tooltip wrapper.                                        |
+| `labels`                    | `Labels`                            | Localized button labels.                                                     |
+| `androidStatusBarVisible`   | `boolean`                           | Set when Android status bar should be included in positioning.               |
+| `startAtMount`              | `boolean \| string`                 | Start automatically when steps are registered. A string starts a keyed tour. |
+| `backdropColor`             | `string`                            | Overlay color.                                                               |
+| `verticalOffset`            | `number`                            | Additional vertical offset for the mask position.                            |
+| `maskOffset`                | `number`                            | Extra spacing around highlighted targets.                                    |
+| `borderRadius`              | `number`                            | Default rectangular mask radius.                                             |
+| `animationDuration`         | `number`                            | Mask animation duration in milliseconds.                                     |
+| `dismissOnPress`            | `boolean`                           | Stop the tour when pressing the overlay.                                     |
+| `preventOutsideInteraction` | `boolean`                           | Block interactions outside the tooltip while a tour is visible.              |
+
+### `TourGuideZone`
+
+Wrap a component that should be highlighted by the tour.
+
+```tsx
+<TourGuideZone zone={1} text='Profile settings' borderRadius={8}>
+  <ProfileButton />
+</TourGuideZone>
+```
+
+Common props:
+
+| Prop                  | Type                 | Description                                        |
+| --------------------- | -------------------- | -------------------------------------------------- |
+| `zone`                | `number`             | Step order.                                        |
+| `tourKey`             | `string`             | Optional tour identifier for multiple tours.       |
+| `isTourGuide`         | `boolean`            | Disable wrapping when false.                       |
+| `text`                | `string`             | Tooltip text.                                      |
+| `shape`               | `Shape`              | Mask shape.                                        |
+| `maskOffset`          | `number`             | Per-step mask offset.                              |
+| `borderRadius`        | `number`             | Per-step rectangular mask radius.                  |
+| `borderRadiusObject`  | `BorderRadiusObject` | Per-corner rectangular mask radius.                |
+| `keepTooltipPosition` | `boolean`            | Preserve tooltip position between steps.           |
+| `tooltipBottomOffset` | `number`             | Extra tooltip spacing from the highlighted target. |
+
+Supported shapes:
+
+```ts
+type Shape = 'circle' | 'rectangle' | 'circle_and_keep' | 'rectangle_and_keep'
+```
+
+### `TourGuideZoneByPosition`
+
+Use this when the highlighted area is not tied to a concrete child component.
+
+```tsx
+<TourGuideZoneByPosition
+  isTourGuide
+  zone={3}
+  text='This area is important'
+  top={80}
+  left={24}
+  width={180}
+  height={64}
+/>
+```
+
+### `useTourGuideController`
+
+Use this hook to start, stop, and observe a tour.
+
+```tsx
+const {
+  canStart,
+  start,
+  stop,
+  eventEmitter,
+  getCurrentStep,
+  TourGuideZone,
+  TourGuideZoneByPosition,
+} = useTourGuideController()
+```
+
+Returned values:
+
+| Value                              | Description                                                                  |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| `start(fromStep?, scrollViewRef?)` | Starts the tour, optionally from a specific step and with a scroll view ref. |
+| `stop()`                           | Stops the current tour.                                                      |
+| `canStart`                         | True when the tour has registered steps.                                     |
+| `eventEmitter`                     | Event emitter for `start`, `stop`, and `stepChange`.                         |
+| `getCurrentStep()`                 | Returns the active step.                                                     |
+| `TourGuideZone`                    | Zone component bound to the selected tour key.                               |
+| `TourGuideZoneByPosition`          | Position-based zone component bound to the selected tour key.                |
+
+## Multiple Tours
+
+Pass a `tourKey` to `useTourGuideController` when your app has more than one independent tour.
+
+```tsx
+const { start, TourGuideZone } = useTourGuideController('onboarding')
+
+return (
+  <>
+    <TourGuideZone zone={1} text='First onboarding step'>
+      <Text>Welcome</Text>
+    </TourGuideZone>
+
+    <Button title='Start onboarding' onPress={() => start()} />
+  </>
+)
+```
+
+You can also pass the same `tourKey` manually to `TourGuideZone`.
+
+## Scroll Views
+
+You can pass a scroll view ref to `start` so the active target can be scrolled into view before measurement.
+
+```tsx
+const scrollRef = React.useRef<ScrollView>(null)
+const { start } = useTourGuideController()
+
+return (
+  <>
+    <ScrollView ref={scrollRef}>
+      <TourGuideZone zone={1} text='A field inside the scroll view'>
+        <Text>Account details</Text>
+      </TourGuideZone>
+    </ScrollView>
+
+    <Button title='Start' onPress={() => start(undefined, scrollRef)} />
+  </>
+)
+```
+
+## Custom Tooltip
+
+Provide `tooltipComponent` to control the tooltip UI.
+
+```tsx
+const CustomTooltip = ({
+  currentStep,
+  handleNext,
+  handlePrev,
+  handleStop,
+  isFirstStep,
+  isLastStep,
+}: TooltipProps) => (
+  <View>
+    <Text>{currentStep.text}</Text>
+    {!isFirstStep && <Button title="Back" onPress={handlePrev} />}
+    {!isLastStep && <Button title="Next" onPress={handleNext} />}
+    <Button title="Close" onPress={handleStop} />
+  </View>
+)
+
+<TourGuideProvider tooltipComponent={CustomTooltip}>
+  <App />
+</TourGuideProvider>
+```
+
+## Events
+
+`eventEmitter` uses [`mitt`](https://github.com/developit/mitt).
+
+```tsx
+eventEmitter.on('start', () => {})
+eventEmitter.on('stop', () => {})
+eventEmitter.on('stepChange', (step) => {})
+```
+
+## Labels
+
+Customize default tooltip button labels.
+
+```tsx
+<TourGuideProvider
+  labels={{
+    previous: 'Previous',
+    next: 'Next',
+    skip: 'Skip',
+    finish: 'Finish',
   }}
 >
-  // ...
+  <App />
 </TourGuideProvider>
 ```
-
-### Listening to the events
-
-Along with `start()`, `useTourGuideController` passes `copilotEvents` function to the component to help you with tracking of tutorial progress. It utilizes [mitt](https://github.com/developit/mitt) under the hood, you can see how full API there.
-
-List of available events is:
-
-- `start` — Copilot tutorial has started.
-- `stop` — Copilot tutorial has ended or skipped.
-- `stepChange` — Next step is triggered. Passes [`Step`](https://github.com/mohebifar/react-native-copilot/blob/master/src/types.js#L2) instance as event handler argument.
-
-
-### Prevent Outside Interaction
-
-Sometimes you need to prevent users to interact with app while tour is shown, in such case `preventOutsideInteraction` prop is up for you.
-
-```default: false```
-
-```jsx
-<TourGuideProvider preventOutsideInteraction>
-  <AppContent />
-</TourGuideProvider>
-```
-
-## Contributing
-
-Issues and Pull Requests are always welcome.
-
-## Hire an expert!
-
-Looking for a ReactNative freelance expert with more than 14 years experience? Contact me from my [website](https://xaviercarpentier.com)!
 
 ## License
 
-- [MIT](LICENSE) © 2020 Xavier CARPENTIER SAS, https://xaviercarpentier.com.
-- [MIT](LICENSE) © 2017 OK GROW!, https://www.okgrow.com.
+MIT. See [LICENSE](./LICENSE).
+
+This fork is maintained by [Ernest Bieś](https://ernestbies.com). Original license notices from `rn-tourguide` and `react-native-copilot` are preserved in the license file.

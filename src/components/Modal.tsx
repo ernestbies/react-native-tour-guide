@@ -16,6 +16,7 @@ import { SvgMask } from './SvgMask'
 import { Tooltip, TooltipProps } from './Tooltip'
 
 declare var __TEST__: boolean
+const MIN_TOOLTIP_MASK_GAP = 24
 
 export interface ModalProps {
   ref: any
@@ -57,6 +58,7 @@ interface State {
   size?: ValueXY
   position?: ValueXY
   tooltipTranslateY: Animated.Value
+  tooltipScale: Animated.Value
   opacity: Animated.Value
   currentStep?: IStep
 }
@@ -70,7 +72,7 @@ interface Move {
 
 export class Modal extends React.Component<ModalProps, State> {
   static defaultProps = {
-    easing: Easing.elastic(0.7),
+    easing: Easing.out(Easing.cubic),
     animationDuration: 400,
     tooltipComponent: Tooltip as any,
     tooltipStyle: {},
@@ -93,13 +95,16 @@ export class Modal extends React.Component<ModalProps, State> {
     isLastStep: false,
     tooltip: {},
     containerVisible: false,
-    tooltipTranslateY: new Animated.Value(400),
+    tooltipTranslateY: new Animated.Value(0),
+    tooltipScale: new Animated.Value(0.92),
     opacity: new Animated.Value(0),
     layout: undefined,
     size: undefined,
     position: undefined,
     currentStep: undefined,
   }
+
+  tooltipAnimation: Animated.CompositeAnimation | null = null
 
   constructor(props: ModalProps) {
     super(props)
@@ -175,10 +180,13 @@ export class Modal extends React.Component<ModalProps, State> {
       left: 0,
     }
 
+    const stepTooltipOffset = this.props.currentStep?.tooltipBottomOffset || 0
+    const tooltipMaskGap = MARGIN + MIN_TOOLTIP_MASK_GAP + stepTooltipOffset
+
     if (verticalPosition === 'bottom') {
-      tooltip.top = obj.top + obj.height + MARGIN
+      tooltip.top = obj.top + obj.height + tooltipMaskGap
     } else {
-      tooltip.bottom = layout.height! - (obj.top - MARGIN)
+      tooltip.bottom = layout.height! - (obj.top - tooltipMaskGap)
     }
 
     if (horizontalPosition === 'left') {
@@ -192,44 +200,60 @@ export class Modal extends React.Component<ModalProps, State> {
       tooltip.maxWidth = layout.width! - tooltip.left - MARGIN
     }
 
-    const duration = this.props.animationDuration! + 200
+    const maskDuration = this.props.animationDuration!
+    const tooltipDuration = Math.round(maskDuration * 0.55)
+    const tooltipDelay = Math.round(maskDuration * 0.65)
     const toValue =
       verticalPosition === 'bottom'
         ? tooltip.top
-        : obj.top -
-          MARGIN -
-          135 -
-          (this.props.currentStep?.tooltipBottomOffset || 0)
+        : obj.top - tooltipMaskGap - 135
+    const slideOffset = verticalPosition === 'bottom' ? 16 : -16
+
+    this.state.opacity.setValue(0)
+    this.state.tooltipTranslateY.setValue(toValue + slideOffset)
+    this.state.tooltipScale.setValue(0.94)
+
     const translateAnim = Animated.timing(this.state.tooltipTranslateY, {
       toValue,
-      duration,
-      easing: this.props.easing,
-      delay: duration,
+      duration: tooltipDuration,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    })
+    const scaleAnim = Animated.timing(this.state.tooltipScale, {
+      toValue: 1,
+      duration: tooltipDuration,
+      easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     })
     const opacityAnim = Animated.timing(this.state.opacity, {
       toValue: 1,
-      duration,
-      easing: this.props.easing,
-      delay: duration,
+      duration: tooltipDuration,
+      easing: Easing.in(Easing.cubic),
       useNativeDriver: true,
     })
-    this.state.opacity.setValue(0)
+    if (this.tooltipAnimation) {
+      this.tooltipAnimation.stop()
+    }
     // Set the tooltip content when the opacity is 0
     this.setState({
       isFirstStep: this.props.isFirstStep,
       isLastStep: this.props.isLastStep,
       currentStep: this.props.currentStep,
     })
-    if (
+    const tooltipAnimations =
       // @ts-ignore
       toValue !== this.state.tooltipTranslateY._value &&
       !this.props.currentStep?.keepTooltipPosition
-    ) {
-      Animated.parallel([translateAnim, opacityAnim]).start()
-    } else {
-      opacityAnim.start()
-    }
+        ? [translateAnim, scaleAnim, opacityAnim]
+        : [scaleAnim, opacityAnim]
+
+    this.tooltipAnimation = Animated.sequence([
+      Animated.delay(tooltipDelay),
+      Animated.parallel(tooltipAnimations),
+    ])
+    this.tooltipAnimation.start(() => {
+      this.tooltipAnimation = null
+    })
 
     this.setState({
       tooltip,
@@ -254,6 +278,11 @@ export class Modal extends React.Component<ModalProps, State> {
   }
 
   reset() {
+    if (this.tooltipAnimation) {
+      this.tooltipAnimation.stop()
+      this.tooltipAnimation = null
+    }
+
     this.setState({
       containerVisible: false,
       layout: undefined,
@@ -307,7 +336,10 @@ export class Modal extends React.Component<ModalProps, State> {
           {
             zIndex: 99,
             opacity,
-            transform: [{ translateY: this.state.tooltipTranslateY }],
+            transform: [
+              { translateY: this.state.tooltipTranslateY },
+              { scale: this.state.tooltipScale },
+            ],
           },
         ]}
       >

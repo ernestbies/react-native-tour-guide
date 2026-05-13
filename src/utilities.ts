@@ -41,8 +41,7 @@ export const getNextStep = (
 ): IStep | null | undefined =>
   Object.values(steps)
     .filter((_step) => _step.order > step!.order)
-    .reduce((a: IStep | null, b) => (!a || a.order > b.order ? b : a), null) ||
-  step
+    .reduce((a: IStep | null, b) => (!a || a.order > b.order ? b : a), null)
 
 const headPath = /^M0,0H\d*\.?\d*V\d*\.?\d*H0V0Z/
 const cleanPath = memoize((path: string) => path.replace(headPath, '').trim())
@@ -140,19 +139,6 @@ const positionOffset = memoize((position: ValueXY, maskOffset: number = 0) =>
     : position,
 )
 
-const getMaxSegmentLength = memoize((shape: Shape) => {
-  switch (shape) {
-    case 'circle':
-    case 'circle_and_keep':
-      return 7
-    case 'rectangle_and_keep':
-      return 25
-
-    default:
-      return 15
-  }
-})
-
 const getSplitPathSliceOne = memoize((path: SvgPath) => {
   const splitPath = splitPathString(path)
   return splitPath.length > 1 ? splitPath.slice(1).join('') : path
@@ -169,7 +155,7 @@ const getInterpolator = memoize(
     borderRadiusObject?: BorderRadiusObject,
   ) => {
     const options = {
-      maxSegmentLength: getMaxSegmentLength(shape),
+      maxSegmentLength: 4,
     }
     const optionsKeep = { single: true }
     const getDefaultInterpolate = () =>

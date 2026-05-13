@@ -1,12 +1,18 @@
 import * as React from 'react'
 
 export const useIsMounted = () => {
-  const isMounted = React.useRef(false)
+  const [isMounted, setIsMounted] = React.useState(false)
+  const isMountedRef = React.useRef(false)
+
   React.useEffect(() => {
-    isMounted.current = true
+    isMountedRef.current = true
+    setIsMounted(true)
+
     return () => {
-      isMounted.current = false
+      isMountedRef.current = false
+      setIsMounted(false)
     }
   }, [])
-  return isMounted
+
+  return { current: isMounted }
 }
