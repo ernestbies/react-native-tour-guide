@@ -1,18 +1,22 @@
-App.tsx
-app.json
-babel.config.js
-metro.config.js
-app.json
-.expo
+# Source files
 src
-.prettierrc
+
+# Config files
 tsconfig.json
-tslint.json
+.prettierrc
+.editorconfig
+eslint.config.mjs
+
+# Tooling
 .github
 .vscode
+
+# Logs
 yarn-error.log
-test/index.html
-.editorconfig
-*.test.js
+
+# Tests
+*.test.ts
 *.test.d.ts
-web-build
+
+# Locks
+yarn.lock
