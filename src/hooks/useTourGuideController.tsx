@@ -59,6 +59,12 @@ export const useTourGuideController = (tourKey?: string) => {
       [key]
     );
 
+  const _setScrollRef = (value: React.SetStateAction<React.RefObject<ScrollView> | null>) => {
+    if (setScrollRef) {
+      setScrollRef(value);
+    }
+  };
+
   return {
     start: _start,
     stop: _stop,
@@ -68,6 +74,6 @@ export const useTourGuideController = (tourKey?: string) => {
     tourKey: key,
     TourGuideZone: KeyedTourGuideZone,
     TourGuideZoneByPosition: KeyedTourGuideZoneByPosition,
-    setScrollRef,
+    setScrollRef: _setScrollRef,
   };
 };
