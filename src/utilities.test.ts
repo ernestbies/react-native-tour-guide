@@ -158,7 +158,7 @@ describe('getNextStep', () => {
 
     expect(utilities.getNextStep(steps, steps[0])).toBe(steps[1]);
     expect(utilities.getNextStep(steps, steps[1])).toBe(steps[2]);
-    // expect(utilities.getNextStep(steps, steps[2])).toBe(null);
+    expect(utilities.getNextStep(steps, steps[2])).toBe(null);
   });
 
   test('non-sequential step orders', () => {
@@ -169,7 +169,7 @@ describe('getNextStep', () => {
     ] as IStep[];
 
     expect(utilities.getNextStep(steps, steps[0])).toBe(steps[1]);
-    // expect(utilities.getNextStep(steps, steps[1])).toBe(null);
+    expect(utilities.getNextStep(steps, steps[1])).toBe(null);
     expect(utilities.getNextStep(steps, steps[2])).toBe(steps[0]);
   });
 });
