@@ -229,15 +229,13 @@ export class Modal extends React.Component<ModalProps, State> {
     if (this.tooltipAnimation) {
       this.tooltipAnimation.stop();
     }
-    // Set the tooltip content when the opacity is 0
     this.setState({
       isFirstStep: this.props.isFirstStep,
       isLastStep: this.props.isLastStep,
       currentStep: this.props.currentStep,
     });
     const tooltipAnimations =
-      // @ts-ignore
-      toValue !== this.state.tooltipTranslateY._value &&
+      toValue !== (this.state.tooltipTranslateY as any)._value &&
       !this.props.currentStep?.keepTooltipPosition
         ? [translateAnim, scaleAnim, opacityAnim]
         : [scaleAnim, opacityAnim];

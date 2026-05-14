@@ -1,4 +1,3 @@
-// @ts-ignore
 import { interpolate, separate, splitPathString, toCircle } from 'flubber';
 import clamp from 'lodash.clamp';
 import memoize from 'memoize-one';

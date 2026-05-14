@@ -241,10 +241,8 @@ export class SvgMask extends Component<Props, State> {
       this.rafID = 0;
       if (this.mask && this.mask.current) {
         if (IS_WEB) {
-          // @ts-ignore
           this.mask.current.setNativeProps({ d });
         } else {
-          // @ts-ignore
           this.mask.current._touchableNode.setAttribute('d', d);
         }
       }

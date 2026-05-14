@@ -33,7 +33,6 @@ export interface BorderRadiusObject {
 
 export type SvgPath = string;
 
-// with flubber
 export interface AnimJSValue {
   _value: number;
 }

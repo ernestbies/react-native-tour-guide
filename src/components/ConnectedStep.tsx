@@ -85,7 +85,6 @@ export class ConnectedStep extends React.Component<Props> {
 
     return new Promise((resolve, reject) => {
       const measure = () => {
-        // Wait until the wrapper element appears
         const node = this.wrapperRef.current;
         if (node && node.measure) {
           const { borderRadius } = this.props;
@@ -111,7 +110,7 @@ export class ConnectedStep extends React.Component<Props> {
   render() {
     const copilot = {
       ref: this.wrapperRef,
-      onLayout: () => {}, // Android hack
+      onLayout: () => {},
     };
 
     return React.cloneElement(this.props.children, { copilot });
