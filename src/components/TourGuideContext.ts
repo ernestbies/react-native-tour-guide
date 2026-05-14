@@ -25,7 +25,7 @@ export interface ITourGuideContext {
   getCurrentStep?(key: string): IStep | undefined;
   start?(key: string, fromStep?: number, scrollViewRef?: React.RefObject<ScrollView>): void;
   stop?(key: string): void;
-  setScrollRef?: React.Dispatch<React.SetStateAction<React.RefObject<ScrollView> | null>>;
+  setScrollRef?(value: React.SetStateAction<React.RefObject<ScrollView> | null>): void;
 }
 
 export const TourGuideContext = React.createContext<ITourGuideContext>({
