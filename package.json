@@ -9,6 +9,7 @@
     "test": "jest --no-watchman",
     "tsc": "tsc --noEmit",
     "tsc:watch": "tsc --noEmit --watch",
+    "prettier": "prettier --write .",
     "build": "rm -rf lib/ && tsc",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",

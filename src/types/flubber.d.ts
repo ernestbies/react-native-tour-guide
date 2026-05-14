@@ -16,7 +16,7 @@ declare module 'flubber' {
     x: number,
     y: number,
     r: number,
-    options?: Options,
+    options?: Options
   ): Interpolator;
 
   export function toRect(
@@ -25,7 +25,7 @@ declare module 'flubber' {
     y: number,
     width: number,
     height: number,
-    options?: Options,
+    options?: Options
   ): Interpolator;
 
   export function fromCircle(
@@ -33,7 +33,7 @@ declare module 'flubber' {
     y: number,
     radius: number,
     toShape: Shape,
-    options?: Options,
+    options?: Options
   ): Interpolator;
 
   export function fromRect(
@@ -42,7 +42,7 @@ declare module 'flubber' {
     width: number,
     height: number,
     toShape: Shape,
-    options?: Options,
+    options?: Options
   ): Interpolator;
 
   export function separate(fromShape: Shape, toShapeList: Shape[], options?: Options): Interpolator;
@@ -52,7 +52,7 @@ declare module 'flubber' {
   export function interpolateAll(
     fromShapeList: Shape[],
     toShapeList: Shape[],
-    options?: Options,
+    options?: Options
   ): Interpolator;
 
   export function toPathString(ring: Array<[number, number]>): string;
