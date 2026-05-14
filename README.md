@@ -1,4 +1,4 @@
-# React Native Tour Guide
+# React Native UI Tour
 
 Interactive step-by-step tours for React Native applications.
 
@@ -27,13 +27,13 @@ This repository is a fork-derived package. Original authors are credited in the 
 ## Installation
 
 ```sh
-yarn add react-native-tour-guide react-native-svg
+yarn add react-native-ui-tour react-native-svg
 ```
 
 or:
 
 ```sh
-npm install react-native-tour-guide react-native-svg
+npm install react-native-ui-tour react-native-svg
 ```
 
 `react`, `react-native`, and `react-native-svg` are peer dependencies. Your app must provide them.
@@ -51,7 +51,7 @@ Wrap your app with `TourGuideProvider`, then mark UI elements with `TourGuideZon
 ```tsx
 import * as React from 'react';
 import { Button, Text, View } from 'react-native';
-import { TourGuideProvider, TourGuideZone, useTourGuideController } from 'react-native-tour-guide';
+import { TourGuideProvider, TourGuideZone, useTourGuideController } from 'react-native-ui-tour';
 
 const AppContent = () => {
   const { canStart, start, stop, eventEmitter } = useTourGuideController();

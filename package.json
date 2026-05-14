@@ -1,7 +1,7 @@
 {
-  "name": "react-native-tour-guide",
+  "name": "react-native-ui-tour",
   "version": "1.0.0",
-  "description": "Interactive step-by-step tour guide for React Native apps, based on rn-tourguide.",
+  "description": "Interactive step-by-step tour guide for React Native apps.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "private": false,
@@ -19,15 +19,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ernestbies/react-native-tour-guide.git"
+    "url": "https://github.com/ernestbies/react-native-ui-tour.git"
   },
   "keywords": [
     "react-native",
-    "react-native-tour-guide",
-    "react-native-tour",
-    "react-native-onboarding",
-    "react-native-walkthrough",
+    "react-native-ui-tour",
     "react-native-copilot",
+    "rn-tourguide",
     "mobile-app-tour-guide",
     "tour-guide",
     "app-tour",
@@ -38,8 +36,7 @@
     "tooltip",
     "overlay",
     "intro",
-    "copilot",
-    "rn-tourguide"
+    "copilot"
   ],
   "author": "ernestbies",
   "license": "MIT",
